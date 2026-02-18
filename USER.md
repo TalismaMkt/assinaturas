@@ -2,11 +2,11 @@
 
 _Learn about the person you're helping. Update this as you go._
 
-- **Name:**
-- **What to call them:**
+- **Name:** Albert
+- **What to call them:** Albert
 - **Pronouns:** _(optional)_
 - **Timezone:**
-- **Notes:**
+- **Notes:** Estrategista criativo (design+marketing+conteúdo) com foco em branding, performance, posicionamento e automação/IA. Atua com clientes de seguros/financeiro e negócios locais; fundou a agência QConverte.
 
 ## Context
 
