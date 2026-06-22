@@ -1,0 +1,32 @@
+import { withSupabase } from "@supabase/server";
+
+export const dynamic = "force-dynamic";
+
+export const GET = withSupabase({ auth: "none" }, async (_req, ctx) => {
+  const { data, error } = await (ctx.supabaseAdmin as any)
+    .from("signature_profiles")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    return Response.json({ ok: false, error: error.message }, { status: 500 });
+  }
+
+  return Response.json({ ok: true, data });
+});
+
+export const POST = withSupabase({ auth: "none" }, async (req, ctx) => {
+  const body = await req.json();
+  const rows = Array.isArray(body) ? body : [body];
+
+  const { data, error } = await (ctx.supabaseAdmin as any)
+    .from("signature_profiles")
+    .upsert(rows as any, { onConflict: "email" })
+    .select();
+
+  if (error) {
+    return Response.json({ ok: false, error: error.message }, { status: 500 });
+  }
+
+  return Response.json({ ok: true, data });
+});
