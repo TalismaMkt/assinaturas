@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Profile = {
   id?: string;
@@ -135,15 +135,6 @@ function validateCsv(headers: string[], rows: Record<string, string>[]) {
 }
 
 function buildSignatureHtml(profile: Profile, template: Template) {
-  const settings = {
-    nameSize: Number(template.settings?.nameSize ?? 19),
-    roleSize: Number(template.settings?.roleSize ?? 11.26),
-    emailSize: Number(template.settings?.emailSize ?? 16),
-    phoneSize: Number(template.settings?.phoneSize ?? 16),
-    addressSize: Number(template.settings?.addressSize ?? 9),
-    siteLabelSize: Number(template.settings?.siteLabelSize ?? 10.09),
-  };
-
   return `
 <div style="width:100%;height:100%;padding-top:22.59px;padding-bottom:19.48px;padding-left:30px;padding-right:21.04px;background:#F7F7F7;display:inline-flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:14px;font-family:Arial,Helvetica,sans-serif;">
  <div style="width:738px;height:91px;display:inline-flex;justify-content:flex-start;align-items:flex-start;gap:11px;">
@@ -191,12 +182,7 @@ export default function Home() {
     setCopyFallback(html);
   }, [html]);
 
-  useEffect(() => {
-    loadTemplates();
-    loadProfiles();
-  }, []);
-
-  async function loadTemplates() {
+  const loadTemplates = useCallback(async () => {
     try {
       const res = await fetch("/api/signature-templates", { cache: "no-store" });
       const json = await res.json();
@@ -205,15 +191,20 @@ export default function Home() {
         setTemplate((prev) => ({ ...prev, ...found }));
       }
     } catch {}
-  }
+  }, []);
 
-  async function loadProfiles() {
+  const loadProfiles = useCallback(async () => {
     try {
       const res = await fetch("/api/signature-profiles", { cache: "no-store" });
       const json = await res.json();
       if (json.ok && Array.isArray(json.data)) setProfiles(json.data);
     } catch {}
-  }
+  }, []);
+
+  useEffect(() => {
+    void loadTemplates();
+    void loadProfiles();
+  }, [loadProfiles, loadTemplates]);
 
   async function saveTemplate() {
     setStatus("Salvando template...");
@@ -237,7 +228,7 @@ export default function Home() {
     const text = await res.text();
     if (res.ok) {
       setStatus("Perfil salvo.");
-      loadProfiles();
+      await loadProfiles();
     } else {
       setStatus(`Falha ao salvar perfil: ${text}`);
     }

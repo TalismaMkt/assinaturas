@@ -123,9 +123,10 @@ export const POST = withSupabase({ auth: "none" }, async (req, ctx) => {
       template_id: template_id ?? null,
     }));
 
-    const { data, error } = await (ctx.supabaseAdmin as any)
+    const admin = ctx.supabaseAdmin;
+    const { data, error } = await admin
       .from("signature_profiles")
-      .upsert(rows as any, { onConflict: "email" })
+      .upsert(rows as never[], { onConflict: "email" })
       .select();
 
     if (error) {
