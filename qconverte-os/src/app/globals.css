@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f1ea;
+  --foreground: #111827;
+  --panel: rgba(255, 255, 255, 0.78);
+  --panel-border: rgba(24, 24, 27, 0.08);
+  --accent: #8b5e34;
+  --accent-soft: #ede3d4;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-display);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(139, 94, 52, 0.08), transparent 28%),
+    radial-gradient(circle at top right, rgba(17, 24, 39, 0.04), transparent 18%),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(17,24,39,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(17,24,39,0.018) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
+  opacity: 0.35;
+}
+
+main, section, article, aside, header {
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.qc-panel {
+  background: var(--panel);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+}
+
+.qc-display {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.03em;
+}
+
+.qc-muted {
+  color: rgba(71, 85, 105, 0.9);
+}
+
+.qc-kicker {
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 700;
+}

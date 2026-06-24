@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="ms-classic">
+<head>
+  <meta charset="utf-8">
+  <title>O crédito não acabou · MS Recebíveis</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap">
+  <style>
+    :root, [data-theme="ms-classic"] { --paper:#f4f1eb; --paper-2:#ece5da; --panel:#2c2c30; --ink:#151923; --text:#f8f6f0; --muted:rgba(255,255,255,.82); --line:rgba(17,24,39,.08); --accent:#bf2f39; --accent-soft:rgba(191,47,57,.12); --warm:#8a8178; }
+    :root { --display:"Playfair Display", Georgia, serif; --sans:"Inter", Arial, Helvetica, sans-serif; }
+    *,*::before,*::after { box-sizing:border-box; } html, body { margin:0; padding:0; }
+    body { background:#14161d; font-family:var(--sans); color:var(--ink); padding:40px 24px 80px; }
+    .sheet { display:flex; flex-direction:column; align-items:center; gap:40px; }
+    .poster { width:1080px; height:1350px; position:relative; overflow:hidden; background:var(--paper); color:var(--ink); border-radius:28px; border:1px solid rgba(255,255,255,.04); box-shadow:0 28px 80px rgba(0,0,0,.28); display:grid; grid-template-columns:390px 1fr; isolation:isolate; }
+    .left { background:var(--panel); color:var(--text); padding:58px 42px 48px; display:flex; flex-direction:column; justify-content:space-between; position:relative; z-index:2; }
+    .right { position:relative; z-index:2; padding:64px 64px 56px; background:radial-gradient(circle at top right, rgba(191,47,57,0.08), transparent 24%), linear-gradient(to bottom, #ffffff, #fbfaf8 70%); display:flex; flex-direction:column; justify-content:space-between; }
+    .brand { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:26px; position:relative; z-index:1; }
+    .brand-kicker { font-size:12px; letter-spacing:0.32em; text-transform:uppercase; color:rgba(255,255,255,.55); font-weight:700; }
+    .brand-mark { width:18px; height:18px; border-radius:999px; background:var(--accent); box-shadow:0 0 0 8px var(--accent-soft); flex:0 0 auto; }
+    .icon { font-size:38px; line-height:1; margin-bottom:22px; position:relative; z-index:1; }
+    .headline { font-family:var(--display); font-size:66px; line-height:.95; letter-spacing:-.04em; font-weight:700; margin:0; position:relative; z-index:1; text-wrap:balance; }
+    .subheadline { margin-top:26px; font-size:22px; line-height:1.55; color:var(--muted); max-width:270px; position:relative; z-index:1; }
+    .meta { font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(255,255,255,.42); font-weight:700; position:relative; z-index:1; }
+    .topline { width:100%; height:1px; background:var(--line); margin-bottom:30px; }
+    .body { max-width:470px; }
+    .eyebrow { font-size:12px; letter-spacing:.24em; text-transform:uppercase; color:var(--warm); font-weight:700; margin-bottom:22px; }
+    .title-right { font-family:var(--display); font-size:44px; line-height:1.02; letter-spacing:-.03em; color:var(--ink); margin:0 0 20px; text-wrap:balance; }
+    .copy { font-size:28px; line-height:1.45; color:#2d3748; margin:0; text-wrap:pretty; }
+    .card { align-self:flex-end; width:300px; border-radius:24px; background:#fff; border:1px solid rgba(17,24,39,.08); box-shadow:0 18px 40px rgba(15,23,42,.06); padding:22px 22px 20px; }
+    .card-label { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--warm); font-weight:700; margin-bottom:10px; }
+    .card-value { font-size:22px; line-height:1.35; font-weight:600; color:var(--ink); }
+    .poster.cover .right { justify-content:flex-start; } .poster.cover .body { max-width:520px; margin-top:18px; } .poster.cover .title-right { font-size:54px; margin-bottom:18px; } .poster.cover .copy { font-size:24px; color:#455164; }
+    .poster.compact .copy { font-size:24px; }
+    .poster.closing .card { background:var(--accent); color:#fff; border-color:transparent; }
+    .poster.closing .card-label, .poster.closing .card-value { color:#fff; }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <section class="poster cover">
+      <div class="left">
+        <div>
+          <div class="brand"><div class="brand-kicker">MS Recebíveis</div><div class="brand-mark"></div></div>
+          <div class="icon">📉</div>
+          <h1 class="headline">O crédito não acabou.</h1>
+          <p class="subheadline">O improviso ficou caro.</p>
+        </div>
+        <div class="meta">Cenário de mercado</div>
+      </div>
+      <div class="right">
+        <div>
+          <div class="topline"></div>
+          <div class="body">
+            <div class="eyebrow">Leitura de mercado</div>
+            <h2 class="title-right">Clareza pesa mais</h2>
+            <p class="copy">Com análise mais rígida, o mercado passou a olhar com mais atenção para previsibilidade, consistência e capacidade de pagamento.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Ponto central</div>
+          <div class="card-value">Hoje, não basta precisar de recurso. É preciso sustentar uma boa leitura da operação.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="poster compact">
+      <div class="left">
+        <div>
+          <div class="brand"><div class="brand-kicker">MS Recebíveis</div><div class="brand-mark"></div></div>
+          <div class="icon">📊</div>
+          <h1 class="headline">O mercado ficou mais seletivo.</h1>
+          <p class="subheadline">E isso muda a forma como empresas acessam crédito.</p>
+        </div>
+        <div class="meta">Slide interno</div>
+      </div>
+      <div class="right">
+        <div>
+          <div class="topline"></div>
+          <div class="body">
+            <div class="eyebrow">Impacto prático</div>
+            <p class="copy">Com custo financeiro mais alto e análise mais cautelosa, empresas desorganizadas tendem a encontrar mais dificuldade para acessar recurso em boas condições.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Na prática</div>
+          <div class="card-value">Consistência operacional e previsibilidade passaram a pesar mais na análise.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="poster closing">
+      <div class="left">
+        <div>
+          <div class="brand"><div class="brand-kicker">MS Recebíveis</div><div class="brand-mark"></div></div>
+          <div class="icon">✓</div>
+          <h1 class="headline">Improviso custa mais caro.</h1>
+          <p class="subheadline">Previsibilidade virou vantagem competitiva.</p>
+        </div>
+        <div class="meta">Fechamento</div>
+      </div>
+      <div class="right">
+        <div>
+          <div class="topline"></div>
+          <div class="body">
+            <div class="eyebrow">Síntese</div>
+            <p class="copy">Em um ambiente mais seletivo, clareza operacional deixou de ser diferencial de gestão. Virou fator de confiança.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">MS Recebíveis</div>
+          <div class="card-value">Mais leitura. Mais consistência. Mais previsibilidade para decidir melhor.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

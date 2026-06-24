@@ -1,0 +1,33 @@
+Basic LLM Chain
+Facebook Graph API
+Schedule Trigger
+HTTP Request
+Wait1
+Facebook Graph API2
+If
+Groq Chat Model
+HTTP Request1
+Edit Fields
+Convert to File
+Wait
+Loop Over Items
+Generate an image
+Google Drive1
+Edit Image
+Download file
+Extract from File
+Upload file
+Append row in sheet
+Message a model
+Basic LLM Chain1
+IMG Flux
+Send message and wait for response
+IMG Flux1
+Facebook Graph API1
+Wait2
+Facebook Graph API3
+OpenAI Chat Model
+Generate an image1
+Google Gemini Chat Model
+Google Gemini Chat Model1
+Assunto (Input)

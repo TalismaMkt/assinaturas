@@ -1,0 +1,213 @@
+{
+  "name": "QConverte Carrossel (OpenAI→NanoBanana→Drive)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "qconverte-carrossel",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "Webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {"name": "topic", "value": "={{$json.body.topic || $json.body.assunto || ''}}"},
+            {"name": "profile", "value": "={{$json.body.profile || $json.body.perfil || 'QConverte'}}"},
+            {"name": "cta", "value": "={{$json.body.cta || 'FOCO'}}"}
+          ],
+          "number": [
+            {"name": "slides", "value": "={{$json.body.slides || 10}}"}
+          ]
+        }
+      },
+      "id": "Set Inputs",
+      "name": "Set Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [200, 0]
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o-mini",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Você é a IA QConverte Carrosséis. Crie carrosséis estratégicos no estilo dopaminérgico, narrativo-documental, com clareza, profundidade e voz de autoridade. Sem clichês, sem motivacional, sem emojis. Cada slide deve ser sequência do anterior. Gere JSON válido apenas."
+          },
+          {
+            "role": "user",
+            "content": "Assunto: {{$json.topic}}\nPerfil: {{$json.profile}}\nCTA: {{$json.cta}}\nSlides: {{$json.slides}}\n\nENTREGA EM JSON COM ESTE FORMATO:\n{\n  \"carouselId\": 1,\n  \"cards\": [\n    {\"card\":1,\"type\":\"V|R|A|E|CTA|P\",\"hook\":\"...\",\"subheadline\":\"...\",\"prompt\":\"editorial magazine style, clean minimal layout, neutral palette, soft natural light, generous empty space for text overlay, no text, no logos, high-end editorial aesthetic\"}\n  ],\n  \"caption\": \"...\",\n  \"reels_script\": [\"...\"]\n}\n\nRegras: card 1 gancho irresistível. card final = \"POWERED BY {PERFIL} — Comente {CTA} receber os próximos conteúdos.\". Até 600 caracteres por card. Não repita nos cards a legenda."
+          }
+        ]
+      },
+      "id": "OpenAI",
+      "name": "OpenAI",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 4,
+      "position": [420, 0],
+      "credentials": {
+        "openAiApi": {
+          "id": "",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = JSON.parse($json.message.content || $json.text || $json);\nconst cards = data.cards || [];\nreturn cards.map(c => ({json: {\n  carouselId: data.carouselId || 1,\n  card: c.card,\n  type: c.type,\n  hook: c.hook,\n  subheadline: c.subheadline,\n  prompt: c.prompt,\n  caption: data.caption,\n  reels_script: data.reels_script\n}}));"
+      },
+      "id": "Parse JSON",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [640, 0]
+    },
+    {
+      "parameters": {
+        "batchSize": 1
+      },
+      "id": "Split",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [860, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://nanophoto.ai/api/nano-banana-pro/generate",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"prompt\": $json.prompt,\n  \"mode\": \"generate\",\n  \"aspectRatio\": \"3:4\",\n  \"imageQuality\": \"2K\"\n}"
+      },
+      "id": "Nano Generate",
+      "name": "Nano Generate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1080, 0],
+      "credentials": {
+        "headerAuth": {
+          "id": "",
+          "name": "Nano Banana Auth"
+        }
+      }
+    },
+    {
+      "parameters": {"amount": 5, "unit": "seconds"},
+      "id": "Wait",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1280, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://nanophoto.ai/api/nano-banana-pro/check-status",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"generationId\": $json.generationId\n}"
+      },
+      "id": "Nano Check",
+      "name": "Nano Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1480, 0],
+      "credentials": {
+        "headerAuth": {
+          "id": "",
+          "name": "Nano Banana Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{$json.status}}", "operation": "equal", "value2": "completed"}
+          ]
+        }
+      },
+      "id": "If Completed",
+      "name": "If Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1680, 0]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.imageUrl}}",
+        "method": "GET",
+        "responseFormat": "file",
+        "options": {},
+        "outputPropertyName": "image"
+      },
+      "id": "Download",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1880, -60]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "binaryData": true,
+        "binaryPropertyName": "image",
+        "fileName": "={{'carousel_' + $json.carouselId + '_card_' + $json.card + '.png'}}",
+        "folderId": "15p9RcJbuDKfujpnXpxxXcFpvH2iDaONh"
+      },
+      "id": "Drive Upload",
+      "name": "Drive Upload",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [2080, -60],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "",
+          "name": "Google Drive AgenteN8NImagem"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "responseCode": 200,
+        "responseData": "firstEntryJson",
+        "responsePropertyName": "caption"
+      },
+      "id": "Respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2280, -60]
+    }
+  ],
+  "connections": {
+    "Webhook": {"main": [[{"node": "Set Inputs", "type": "main", "index": 0}]]},
+    "Set Inputs": {"main": [[{"node": "OpenAI", "type": "main", "index": 0}]]},
+    "OpenAI": {"main": [[{"node": "Parse JSON", "type": "main", "index": 0}]]},
+    "Parse JSON": {"main": [[{"node": "Split In Batches", "type": "main", "index": 0}]]},
+    "Split In Batches": {"main": [[{"node": "Nano Generate", "type": "main", "index": 0}]]},
+    "Nano Generate": {"main": [[{"node": "Wait", "type": "main", "index": 0}]]},
+    "Wait": {"main": [[{"node": "Nano Check", "type": "main", "index": 0}]]},
+    "Nano Check": {"main": [[{"node": "If Completed", "type": "main", "index": 0}]]},
+    "If Completed": {
+      "main": [
+        [{"node": "Download Image", "type": "main", "index": 0}],
+        [{"node": "Wait", "type": "main", "index": 0}]
+      ]
+    },
+    "Download Image": {"main": [[{"node": "Drive Upload", "type": "main", "index": 0}]]},
+    "Drive Upload": {"main": [[{"node": "Respond", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "versionId": "1"
+}

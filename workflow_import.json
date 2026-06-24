@@ -1,0 +1,501 @@
+{
+ "name": "PickupPremium - Bot Stories v2 (Otimizado)",
+ "nodes": [
+ {
+ "parameters": {
+ "updates": [
+ "message"
+ ],
+ "additionalFields": {
+ "download": true
+ }
+ },
+ "id": "a91bd5c1",
+ "name": "Telegram Trigger",
+ "type": "n8n-nodes-base.telegramTrigger",
+ "typeVersion": 1,
+ "position": [
+ -608,
+ 0
+ ]
+ },
+ {
+ "parameters": {
+ "values": {
+ "string": [
+ {
+ "name": "caption",
+ "value": "={{ $node['Telegram Trigger'].json.message.caption }}"
+ },
+ {
+ "name": "chat_id",
+ "value": "={{ $node['Telegram Trigger'].json.message.chat.id }}"
+ },
+ {
+ "name": "photo_id",
+ "value": "={{ $node['Telegram Trigger'].json.message.photo[0].file_id }}"
+ }
+ ]
+ },
+ "options": {}
+ },
+ "id": "83043ff4",
+ "name": "Extract Caption & Photo",
+ "type": "n8n-nodes-base.set",
+ "typeVersion": 2,
+ "position": [
+ -384,
+ 0
+ ]
+ },
+ {
+ "parameters": {
+ "model": "gemini-1.5-flash",
+ "options": {
+ "temperature": 0.7
+ },
+ "messages": {
+ "messageValues": [
+ {
+ "role": "user",
+ "content": "Analise a legenda e extraia em JSON:\nLegenda: \"{{ $json.caption }}\"\n\nRetorne APENAS JSON válido (sem markdown):\n{\n \"modelo\": \"nome do modelo\",\n \"ano\": \"ano\",\n \"transmissao\": \"transmissão\",\n \"descricao\": \"descrição\",\n \"promocao\": \"promoção\"\n}"
+ }
+ ]
+ }
+ },
+ "id": "88c6395b",
+ "name": "Google Gemini - Read Caption",
+ "type": "@n8n/n8n-nodes-langchain.googleGemini",
+ "typeVersion": 1,
+ "position": [
+ -160,
+ 0
+ ]
+ },
+ {
+ "parameters": {
+ "method": "GET",
+ "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.photo_id }}"
+ },
+ "id": "eb66d142",
+ "name": "Get Telegram File",
+ "type": "n8n-nodes-base.httpRequest",
+ "typeVersion": 4,
+ "position": [
+ 80,
+ 0
+ ]
+ },
+ {
+ "parameters": {
+ "method": "POST",
+ "url": "https://api.remove.bg/v1.0/removebg",
+ "sendHeaders": true,
+ "headerParameters": {
+ "parameters": [
+ {
+ "name": "X-API-Key",
+ "value": "={{ $env.REMOVEBG_API_KEY }}"
+ }
+ ]
+ },
+ "sendBody": true,
+ "contentType": "multipart-form-data",
+ "bodyParameters": {
+ "parameters": [
+ {
+ "parameterType": "formBinaryData",
+ "name": "image_file",
+ "inputDataFieldName": "data"
+ },
+ {
+ "name": "size",
+ "value": "preview"
+ },
+ {
+ "name": "format",
+ "value": "png"
+ }
+ ]
+ }
+ },
+ "id": "15979068",
+ "name": "Remove Background",
+ "type": "n8n-nodes-base.httpRequest",
+ "typeVersion": 4,
+ "position": [
+ 320,
+ 0
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "download",
+ "fileId": {
+ "__rl": true,
+ "value": "1z2mWV-HiVyfFJCXgX1fmBsRnBY76CNUN",
+ "mode": "id"
+ }
+ },
+ "id": "e9c1520f",
+ "name": "Download Background",
+ "type": "n8n-nodes-base.googleDrive",
+ "typeVersion": 3,
+ "position": [
+ 320,
+ 200
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "resize",
+ "width": 400,
+ "height": 500,
+ "backgroundColor": "rgba(0,0,0,0)",
+ "options": {}
+ },
+ "id": "221326a0",
+ "name": "Resize Car",
+ "type": "n8n-nodes-base.editImage",
+ "typeVersion": 1,
+ "position": [
+ 560,
+ 0
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "composite",
+ "positionX": 100,
+ "positionY": 400,
+ "options": {}
+ },
+ "id": "e90b9c5a",
+ "name": "Composite Car",
+ "type": "n8n-nodes-base.editImage",
+ "typeVersion": 1,
+ "position": [
+ 800,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "text",
+ "text": "={{ $json.output.modelo }}",
+ "fontColor": "#FFFFFF",
+ "fontSize": 48,
+ "fontFamily": "Arial",
+ "fontWeight": "bold",
+ "positionX": 50,
+ "positionY": 650,
+ "options": {}
+ },
+ "id": "e52f4cfd",
+ "name": "Add Model Text",
+ "type": "n8n-nodes-base.editImage",
+ "typeVersion": 1,
+ "position": [
+ 1040,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "text",
+ "text": "={{ $json.output.descricao }}",
+ "fontColor": "#FFFFFF",
+ "fontSize": 24,
+ "fontFamily": "Arial",
+ "positionX": 50,
+ "positionY": 750,
+ "options": {}
+ },
+ "id": "2468b0ca",
+ "name": "Add Description Text",
+ "type": "n8n-nodes-base.editImage",
+ "typeVersion": 1,
+ "position": [
+ 1280,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "text",
+ "text": "={{ $json.output.transmissao }}",
+ "fontColor": "#FFFFFF",
+ "fontSize": 36,
+ "fontFamily": "Arial",
+ "fontWeight": "bold",
+ "positionX": 50,
+ "positionY": 900,
+ "options": {}
+ },
+ "id": "ef8bb9b5",
+ "name": "Add Transmission Text",
+ "type": "n8n-nodes-base.editImage",
+ "typeVersion": 1,
+ "position": [
+ 1520,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "text",
+ "text": "={{ $json.output.ano }}",
+ "fontColor": "#FFFFFF",
+ "fontSize": 36,
+ "fontFamily": "Arial",
+ "fontWeight": "bold",
+ "positionX": 700,
+ "positionY": 900,
+ "options": {}
+ },
+ "id": "1873f5f9",
+ "name": "Add Year Text",
+ "type": "n8n-nodes-base.editImage",
+ "typeVersion": 1,
+ "position": [
+ 1760,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "toDataURL",
+ "options": {}
+ },
+ "id": "abbe51d2",
+ "name": "Convert to Base64",
+ "type": "n8n-nodes-base.extractFromFile",
+ "typeVersion": 1,
+ "position": [
+ 2000,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "method": "POST",
+ "url": "https://api.cloudinary.com/v1_1/dsoquqv7f/image/upload",
+ "sendBody": true,
+ "contentType": "multipart-form-data",
+ "bodyParameters": {
+ "parameters": [
+ {
+ "name": "file",
+ "value": "={{ $json.data }}"
+ },
+ {
+ "name": "upload_preset",
+ "value": "n8nupload"
+ }
+ ]
+ }
+ },
+ "id": "0b66b35d",
+ "name": "Upload Cloudinary",
+ "type": "n8n-nodes-base.httpRequest",
+ "typeVersion": 4,
+ "position": [
+ 2240,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "values": {
+ "string": [
+ {
+ "name": "image_url",
+ "value": "={{ $json.secure_url || $json.url }}"
+ }
+ ]
+ },
+ "options": {}
+ },
+ "id": "ea48950e",
+ "name": "Extract URL",
+ "type": "n8n-nodes-base.set",
+ "typeVersion": 2,
+ "position": [
+ 2480,
+ 100
+ ]
+ },
+ {
+ "parameters": {
+ "operation": "sendPhoto",
+ "chatId": "={{ $json.chat_id }}",
+ "file": "={{ $json.image_url }}",
+ "additionalFields": {
+ "caption": "✅ Sua arte está pronta!\n\n{{ $json.output.modelo }}\n{{ $json.output.descricao }}"
+ }
+ },
+ "id": "3df7e155",
+ "name": "Send Photo",
+ "type": "n8n-nodes-base.telegram",
+ "typeVersion": 1,
+ "position": [
+ 2720,
+ 100
+ ]
+ }
+ ],
+ "connections": {
+ "Telegram Trigger": [
+ {
+ "node": "Extract Caption & Photo",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Extract Caption & Photo": [
+ {
+ "node": "Google Gemini - Read Caption",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Google Gemini - Read Caption": [
+ {
+ "node": "Get Telegram File",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Get Telegram File": [
+ {
+ "node": "Remove Background",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Remove Background": [
+ {
+ "node": "Resize Car",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Download Background": [
+ {
+ "node": "Composite Car",
+ "type": "main",
+ "index": [
+ 0,
+ 1
+ ]
+ }
+ ],
+ "Resize Car": [
+ {
+ "node": "Composite Car",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Composite Car": [
+ {
+ "node": "Add Model Text",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Add Model Text": [
+ {
+ "node": "Add Description Text",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Add Description Text": [
+ {
+ "node": "Add Transmission Text",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Add Transmission Text": [
+ {
+ "node": "Add Year Text",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Add Year Text": [
+ {
+ "node": "Convert to Base64",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Convert to Base64": [
+ {
+ "node": "Upload Cloudinary",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Upload Cloudinary": [
+ {
+ "node": "Extract URL",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ],
+ "Extract URL": [
+ {
+ "node": "Send Photo",
+ "type": "main",
+ "index": [
+ 0,
+ 0
+ ]
+ }
+ ]
+ },
+ "settings": {},
+ "description": "Workflow otimizado com IA para ler legendas e gerar imagens profissionais"
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VRD evoluiu para Talismã Seguros e Benefícios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Foco:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --green:#0F3D2E;
+      --green-2:#1E6B4F;
+      --white:#FFFFFF;
+      --gray:#F2F4F3;
+      --text:#333333;
+      --gold:#C8A646;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Foco',system-ui,Segoe UI,Arial,sans-serif;color:var(--text);background:var(--white);}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:0 24px}
+    .btn{display:inline-block;background:var(--green-2);color:#fff;padding:14px 22px;border-radius:8px;font-weight:600;letter-spacing:.4px}
+    .btn.outline{background:transparent;border:2px solid #fff;color:#fff}
+    header.hero{background:var(--green);color:#fff;padding:72px 0}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center}
+    h1{font-size:40px;line-height:1.15;margin:0 0 14px}
+    h2{font-size:28px;margin:0 0 12px}
+    p{font-size:16px;line-height:1.6}
+    .hero p{font-size:18px;color:#e8f2ee}
+    .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+    .section{padding:64px 0}
+    .section.gray{background:var(--gray)}
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:24px}
+    .card{background:#fff;border-radius:12px;padding:22px;border:1px solid #e7ecea}
+    .card h3{margin:0 0 8px;font-size:18px;color:var(--green)}
+    .center{text-align:center}
+    .impact{font-size:24px;font-weight:600;color:var(--green)}
+    .form{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+    .form input,.form select,.form textarea{width:100%;padding:12px 14px;border:1px solid #d9e2de;border-radius:8px;font-family:inherit}
+    .form textarea{grid-column:1/-1;min-height:120px}
+    footer{background:var(--green);color:#fff;padding:40px 0}
+    .logo{max-width:220px;height:auto}
+    .tag{color:var(--gold);font-weight:600;letter-spacing:.6px;font-size:12px;text-transform:uppercase}
+    @media(max-width:900px){
+      .hero-grid{grid-template-columns:1fr}
+      .cards{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:600px){
+      .cards{grid-template-columns:1fr}
+      .form{grid-template-columns:1fr}
+      h1{font-size:32px}
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="tag">Transição de marca</div>
+        <h1>A VRD evoluiu. A sua proteção continua.</h1>
+        <p>Mudamos de nome. Mantivemos o cuidado. Agora somos <strong>Talismã Seguros e Benefícios</strong>.</p>
+        <div class="hero-cta">
+          <a class="btn" href="https://wa.me/5511921395027" target="_blank" rel="noopener">FALAR COM UM CONSULTOR</a>
+          <a class="btn outline" href="#contato">SOLICITAR ATENDIMENTO</a>
+        </div>
+      </div>
+      <div class="center">
+        <img class="logo" src="https://talismaseguros.com/wp-content/uploads/2025/12/06.-Logo-Horizontal-Light@2x-e1766260226720.png" alt="Talismã Seguros e Benefícios" />
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <h2>Por que você chegou aqui?</h2>
+      <p>A VRD Seguros & Benefícios evoluiu e agora se chama <strong>Talismã Seguros e Benefícios</strong>. A equipe, o cuidado e o compromisso permanecem os mesmos — com uma marca mais clara, humana e preparada para o futuro.</p>
+    </div>
+  </section>
+
+  <section class="section gray">
+    <div class="container">
+      <h2>Diferenciais que continuam</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Atendimento humano</h3>
+          <p>Orientação de verdade, com empatia e clareza em cada etapa.</p>
+        </div>
+        <div class="card">
+          <h3>Ecossistema de proteção</h3>
+          <p>Soluções completas para pessoas, famílias e empresas.</p>
+        </div>
+        <div class="card">
+          <h3>Suporte real no sinistro</h3>
+          <p>Presença ativa quando você mais precisa.</p>
+        </div>
+        <div class="card">
+          <h3>Tecnologia que aproxima</h3>
+          <p>Processos modernos para um atendimento mais rápido e transparente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container center">
+      <div class="impact">“Nasce nova, mas vem de uma história forte.”</div>
+      <p style="max-width:720px;margin:14px auto 0">A Talismã carrega a essência da VRD e amplia a capacidade de cuidar de você com ainda mais proximidade.</p>
+    </div>
+  </section>
+
+  <section class="section" id="contato">
+    <div class="container">
+      <h2>Fale com a gente</h2>
+      <p>Preencha para receber orientação sem letras miúdas — só cuidado e clareza.</p>
+      <form class="form">
+        <input type="text" placeholder="Nome" />
+        <input type="text" placeholder="WhatsApp" />
+        <select>
+          <option>Tipo de atendimento</option>
+          <option>Seguro Auto</option>
+          <option>Seguro Saúde</option>
+          <option>Seguro Empresarial</option>
+          <option>Outros</option>
+        </select>
+        <input type="text" placeholder="E-mail (opcional)" />
+        <textarea placeholder="Mensagem"></textarea>
+        <button class="btn" type="button">ENVIAR</button>
+      </form>
+      <p style="margin-top:10px;color:#666">Sem letras miúdas. Só orientação de verdade.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+        <div>
+          <strong>Talismã Seguros e Benefícios</strong><br>
+          Rua Jorge Tibiriça, 2.474 – Boa Vista – CEP 15.010-050 – São José do Rio Preto/SP
+        </div>
+        <div>
+          <a class="btn" href="https://wa.me/5511921395027" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

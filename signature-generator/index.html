@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Assinatura Talismã</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); }
+    .wrap { width: min(98vw, 1900px); max-width: 1900px; margin: 0 auto; padding: 24px 20px 40px; }
+    .header { margin-bottom: 24px; }
+    .header h1 { margin: 0 0 8px; font-size: 32px; }
+    .header p { margin: 0; color: var(--muted); font-size: 16px; }
+    .grid { display: grid; grid-template-columns: minmax(560px, 700px) minmax(0, 1fr); gap: 24px; align-items: start; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); padding: 22px; }
+    .panel.preview-panel { position: sticky; top: 20px; align-self: start; }
+    .panel h2, .panel h3 { margin-top: 0; }
+    .form-grid { display: grid; gap: 14px; }
+    .field label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: bold; color: var(--muted); }
+    .field input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; outline: none; font-family: inherit; }
+    .field input:focus { border-color: #8cc63f; box-shadow: 0 0 0 3px rgba(140, 198, 63, 0.14); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+    button, .file-label { border: 0; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: bold; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+    .primary { background: #8cc63f; color: white; }
+    .secondary { background: #111827; color: white; }
+    .ghost { background: #eef2f7; color: #111827; }
+    .preview-shell { background: #f8fafc; border: 1px dashed #d1d5db; border-radius: 14px; padding: 24px; overflow: auto; display: flex; justify-content: center; align-items: flex-start; min-height: 60vh; }
+    .preview-shell > div { flex: 0 0 auto; }
+    .status { margin-top: 12px; font-size: 13px; color: var(--muted); min-height: 18px; }
+    .hint { margin-top: 16px; padding: 14px; border-radius: 12px; background: #f8fafc; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .divider { height: 1px; background: var(--border); margin: 24px 0; }
+    .csv-box, .controls-box, .order-box, .text-box, .contact-icons-box { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+    .csv-help { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .sample { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-size: 12px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+    .bulk-list { display: grid; gap: 18px; margin-top: 20px; }
+    .bulk-card { border: 1px solid var(--border); border-radius: 14px; background: #fff; padding: 16px; }
+    .bulk-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .bulk-card-title { font-size: 15px; font-weight: bold; color: #111827; }
+    .bulk-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .mini-btn { padding: 9px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; font-weight: bold; }
+    .mini-dark { background: #111827; color: white; }
+    .mini-light { background: #eef2f7; color: #111827; }
+    .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .checkbox-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-top: 10px; }
+    .check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; }
+    .check input { width: auto; }
+    .order-list { display: grid; gap: 10px; margin-top: 12px; }
+    .order-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fafafa; }
+    .order-actions { display: flex; gap: 8px; }
+    .order-btn { padding: 8px 10px; border-radius: 8px; border: none; background: #eef2f7; color: #111827; cursor: pointer; font-size: 12px; font-weight: bold; }
+    #csvFile { display: none; }
+    @media (max-width: 1280px) {
+      .grid { grid-template-columns: minmax(480px, 620px) minmax(0, 1fr); }
+    }
+    @media (max-width: 980px) {
+      .wrap { width: 100%; max-width: none; padding: 20px 14px 32px; }
+      .grid, .field-row, .controls-grid, .checkbox-list { grid-template-columns: 1fr; }
+      .panel.preview-panel { position: static; }
+      .preview-shell { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>Gerador de Assinatura Talismã</h1>
+      <p>Agora com controles dos ícones de e-mail, telefone e endereço.</p>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Dados da assinatura</h2>
+        <div class="form-grid">
+          <div class="field-row">
+            <div class="field"><label for="firstName">Primeiro nome</label><input id="firstName" value="Camila" /></div>
+            <div class="field"><label for="lastName">Sobrenome</label><input id="lastName" value="Santos" /></div>
+          </div>
+          <div class="field"><label for="role">Cargo</label><input id="role" value="Auxiliar administrativo" /></div>
+          <div class="field"><label for="email">E-mail</label><input id="email" value="aux01.recepcao@talismaseguros.com" /></div>
+          <div class="field"><label for="phone">Telefone</label><input id="phone" value="17 99641-9074" /></div>
+          <div class="field"><label for="address">Endereço</label><input id="address" value="RUA JORGE TIBIRIÇA, 2.474 BOA VISTA, na cidade de São José do Rio Preto/SP. (CEP. 1510-050)" /></div>
+          <div class="field"><label for="photo">Foto / avatar (URL)</label><input id="photo" value="https://placehold.co/82x116" /></div>
+          <div class="field-row">
+            <div class="field"><label for="siteLabel">Frase central</label><input id="siteLabel" value="gente cuidando de gente!" /></div>
+            <div class="field"><label for="site">Link do site</label><input id="site" value="https://www.talismaseguros.com" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="linkedin">LinkedIn</label><input id="linkedin" value="https://www.linkedin.com/company/talismaseguros" /></div>
+            <div class="field"><label for="facebook">Facebook</label><input id="facebook" value="https://www.facebook.com/talismaseguros" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="instagram">Instagram</label><input id="instagram" value="https://www.instagram.com/talismaseguros" /></div>
+            <div class="field"><label for="whatsapp">WhatsApp</label><input id="whatsapp" value="https://wa.me/5517996419074" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="youtube">YouTube</label><input id="youtube" value="https://www.youtube.com" /></div>
+            <div class="field"><label for="site2">Site extra</label><input id="site2" value="https://www.talismaseguros.com" /></div>
+          </div>
+          <div class="field"><label for="tiktok">TikTok</label><input id="tiktok" value="https://www.tiktok.com" /></div>
+        </div>
+
+        <div class="text-box">
+          <h3>Controle dos textos</h3>
+          <div class="checkbox-list">
+            <label class="check"><input type="checkbox" id="showName" checked> Mostrar nome</label>
+            <label class="check"><input type="checkbox" id="showRoleText" checked> Mostrar cargo</label>
+            <label class="check"><input type="checkbox" id="showEmailText" checked> Mostrar texto do e-mail</label>
+            <label class="check"><input type="checkbox" id="showPhoneText" checked> Mostrar texto do telefone</label>
+            <label class="check"><input type="checkbox" id="showAddressText" checked> Mostrar texto do endereço</label>
+            <label class="check"><input type="checkbox" id="showSiteLabelText" checked> Mostrar frase central</label>
+          </div>
+          <div class="controls-grid" style="margin-top:14px;">
+            <div class="field"><label for="nameSize">Tamanho nome</label><input id="nameSize" type="number" value="19" /></div>
+            <div class="field"><label for="nameColor">Cor nome</label><input id="nameColor" value="#26478A" /></div>
+            <div class="field"><label for="roleSize">Tamanho cargo</label><input id="roleSize" type="number" value="11.26" /></div>
+            <div class="field"><label for="roleColor">Cor cargo</label><input id="roleColor" value="#8CC63F" /></div>
+            <div class="field"><label for="emailSize">Tamanho e-mail</label><input id="emailSize" type="number" value="16" /></div>
+            <div class="field"><label for="emailColor">Cor e-mail</label><input id="emailColor" value="#666666" /></div>
+            <div class="field"><label for="phoneSize">Tamanho telefone</label><input id="phoneSize" type="number" value="16" /></div>
+            <div class="field"><label for="phoneColor">Cor telefone</label><input id="phoneColor" value="#666666" /></div>
+            <div class="field"><label for="addressSize">Tamanho endereço</label><input id="addressSize" type="number" value="9" /></div>
+            <div class="field"><label for="addressColor">Cor endereço</label><input id="addressColor" value="#666666" /></div>
+            <div class="field"><label for="siteLabelSize">Tamanho frase central</label><input id="siteLabelSize" type="number" value="10.09" /></div>
+            <div class="field"><label for="siteLabelColor">Cor frase central</label><input id="siteLabelColor" value="#26478A" /></div>
+          </div>
+        </div>
+
+        <div class="contact-icons-box">
+          <h3>Controle dos ícones de contato</h3>
+          <div class="checkbox-list">
+            <label class="check"><input type="checkbox" id="showEmailIcon" checked> Mostrar ícone de e-mail</label>
+            <label class="check"><input type="checkbox" id="showPhoneIcon" checked> Mostrar ícone de telefone</label>
+            <label class="check"><input type="checkbox" id="showAddressIcon" checked> Mostrar ícone de endereço</label>
+          </div>
+          <div class="controls-grid" style="margin-top:14px;">
+            <div class="field"><label for="emailIconSize">Tamanho ícone e-mail</label><input id="emailIconSize" type="number" value="24.57" /></div>
+            <div class="field"><label for="phoneIconSize">Tamanho ícone telefone</label><input id="phoneIconSize" type="number" value="25.49" /></div>
+            <div class="field"><label for="addressIconSize">Tamanho ícone endereço</label><input id="addressIconSize" type="number" value="24.57" /></div>
+          </div>
+        </div>
+
+        <div class="controls-box">
+          <h3>Controle de ícones e ativos</h3>
+          <div class="checkbox-list">
+            <label class="check"><input type="checkbox" id="showEmail" checked> Mostrar e-mail</label>
+            <label class="check"><input type="checkbox" id="showPhone" checked> Mostrar telefone</label>
+            <label class="check"><input type="checkbox" id="showAddress" checked> Mostrar endereço</label>
+            <label class="check"><input type="checkbox" id="showCertificate" checked> Mostrar certificado</label>
+            <label class="check"><input type="checkbox" id="showLogo" checked> Mostrar logo</label>
+            <label class="check"><input type="checkbox" id="showLinkedin" checked> Mostrar LinkedIn</label>
+            <label class="check"><input type="checkbox" id="showFacebook" checked> Mostrar Facebook</label>
+            <label class="check"><input type="checkbox" id="showInstagram" checked> Mostrar Instagram</label>
+            <label class="check"><input type="checkbox" id="showWhatsapp" checked> Mostrar WhatsApp</label>
+            <label class="check"><input type="checkbox" id="showYoutube" checked> Mostrar YouTube</label>
+            <label class="check"><input type="checkbox" id="showSiteIcon" checked> Mostrar Site</label>
+            <label class="check"><input type="checkbox" id="showTiktok" checked> Mostrar TikTok</label>
+          </div>
+          <div class="controls-grid" style="margin-top:14px;">
+            <div class="field"><label for="certificateWidth">Largura certificado</label><input id="certificateWidth" type="number" value="82" /></div>
+            <div class="field"><label for="certificateHeight">Altura certificado</label><input id="certificateHeight" type="number" value="116" /></div>
+            <div class="field"><label for="logoWidth">Largura logo</label><input id="logoWidth" type="number" value="125" /></div>
+            <div class="field"><label for="socialIconSize">Tamanho ícones sociais</label><input id="socialIconSize" type="number" value="19" /></div>
+          </div>
+        </div>
+
+        <div class="order-box">
+          <h3>Ordem das redes</h3>
+          <div class="hint" style="margin-top:0;">Use subir/descer para reorganizar a ordem dos ícones sociais.</div>
+          <div id="orderList" class="order-list"></div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="copyHtml">Copiar HTML</button>
+          <button class="secondary" id="copyPreview">Copiar assinatura</button>
+          <button class="ghost" id="downloadHtml">Baixar HTML</button>
+        </div>
+        <div class="status" id="status"></div>
+        <div class="field" style="margin-top:12px;">
+          <label for="copyFallback">Backup para copiar manualmente</label>
+          <input id="copyFallback" readonly />
+        </div>
+
+        <div class="csv-box">
+          <h3>Geração em massa por CSV</h3>
+          <div class="csv-help">Importe um CSV simples só com os campos variáveis: nome, sobrenome, cargo, telefone e e-mail. Todo o resto vem do template configurado na tela.</div>
+          <div class="field" style="margin-bottom:12px;">
+            <label for="csvUrl">URL CSV da planilha</label>
+            <input id="csvUrl" placeholder="https://docs.google.com/.../export?format=csv" />
+          </div>
+          <div class="actions">
+            <label for="csvFile" class="file-label ghost">Importar CSV</label>
+            <input type="file" id="csvFile" accept=".csv,text/csv" />
+            <button class="ghost" id="importCsvUrl">Importar via URL</button>
+            <button class="ghost" id="downloadSampleCsv">Baixar CSV modelo</button>
+            <button class="secondary" id="downloadBulkHtml" disabled>Baixar lote HTML</button>
+          </div>
+          <div class="status" id="bulkStatus"></div>
+          <div class="hint">Cabeçalhos esperados: firstName, lastName, role, phone, email</div>
+          <div class="sample" id="sampleCsv"></div>
+        </div>
+      </section>
+
+      <section class="panel preview-panel">
+        <h2>Prévia individual</h2>
+        <div class="preview-shell"><div id="preview"></div></div>
+        <div class="divider"></div>
+        <h2>Prévia em massa</h2>
+        <div id="bulkList" class="bulk-list"><div class="hint">Quando você importar um CSV, as assinaturas aparecerão aqui.</div></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const fieldIds = ['firstName','lastName','role','email','phone','address','photo','siteLabel','site','linkedin','facebook','instagram','whatsapp','youtube','site2','tiktok'];
+    const toggleIds = ['showEmail','showPhone','showAddress','showCertificate','showLogo','showLinkedin','showFacebook','showInstagram','showWhatsapp','showYoutube','showSiteIcon','showTiktok','showName','showRoleText','showEmailText','showPhoneText','showAddressText','showSiteLabelText','showEmailIcon','showPhoneIcon','showAddressIcon'];
+    const sizeIds = ['certificateWidth','certificateHeight','logoWidth','socialIconSize','nameSize','roleSize','emailSize','phoneSize','addressSize','siteLabelSize','emailIconSize','phoneIconSize','addressIconSize'];
+    const colorIds = ['nameColor','roleColor','emailColor','phoneColor','addressColor','siteLabelColor'];
+
+    const ICONS = {
+      email: './assets/icons/e-mail.svg',
+      phone: './assets/icons/whatsapp1.svg',
+      address: './assets/icons/Endereco.svg',
+      logo: './assets/icons/Logotipo talisma.png',
+      linkedin: './assets/icons/Linkedin.svg',
+      facebook: './assets/icons/FAcebook.svg',
+      instagram: './assets/icons/Instagram.svg',
+      whatsapp: './assets/icons/Whatsapp.svg',
+      youtube: './assets/icons/Youtube.svg',
+      site: './assets/icons/Site.svg',
+      tiktok: './assets/icons/Tiktok.svg',
+      certificate: './assets/icons/certificado.png',
+      separator: './assets/icons/barra-separador.svg'
+    };
+
+    const SOCIAL_META = {
+      linkedin: { label: 'LinkedIn', icon: ICONS.linkedin, linkField: 'linkedin', toggle: 'showLinkedin' },
+      facebook: { label: 'Facebook', icon: ICONS.facebook, linkField: 'facebook', toggle: 'showFacebook' },
+      instagram: { label: 'Instagram', icon: ICONS.instagram, linkField: 'instagram', toggle: 'showInstagram' },
+      whatsapp: { label: 'WhatsApp', icon: ICONS.whatsapp, linkField: 'whatsapp', toggle: 'showWhatsapp' },
+      youtube: { label: 'YouTube', icon: ICONS.youtube, linkField: 'youtube', toggle: 'showYoutube' },
+      site: { label: 'Site', icon: ICONS.site, linkField: 'site2', toggle: 'showSiteIcon' },
+      tiktok: { label: 'TikTok', icon: ICONS.tiktok, linkField: 'tiktok', toggle: 'showTiktok' }
+    };
+
+    let socialOrder = ['linkedin','facebook','instagram','whatsapp','youtube','site','tiktok'];
+    let bulkRows = [];
+
+    const els = Object.fromEntries(fieldIds.map(id => [id, document.getElementById(id)]));
+    const toggles = Object.fromEntries(toggleIds.map(id => [id, document.getElementById(id)]));
+    const sizes = Object.fromEntries(sizeIds.map(id => [id, document.getElementById(id)]));
+    const colors = Object.fromEntries(colorIds.map(id => [id, document.getElementById(id)]));
+    const preview = document.getElementById('preview');
+    const status = document.getElementById('status');
+    const copyFallback = document.getElementById('copyFallback');
+    const bulkStatus = document.getElementById('bulkStatus');
+    const bulkList = document.getElementById('bulkList');
+    const csvFile = document.getElementById('csvFile');
+    const csvUrl = document.getElementById('csvUrl');
+    const importCsvUrlBtn = document.getElementById('importCsvUrl');
+    const downloadBulkHtml = document.getElementById('downloadBulkHtml');
+    const sampleCsvEl = document.getElementById('sampleCsv');
+    const orderList = document.getElementById('orderList');
+
+    const sampleCsv = `firstName,lastName,role,phone,email
+Camila,Santos,Auxiliar administrativo,17 99641-9074,aux01.recepcao@talismaseguros.com
+João,Silva,Consultor comercial,17 99999-9999,joao@talismaseguros.com`;
+    sampleCsvEl.textContent = sampleCsv;
+
+    const esc = (str = '') => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    function renderOrderList() {
+      orderList.innerHTML = socialOrder.map((key, index) => `
+        <div class="order-item">
+          <div>${SOCIAL_META[key].label}</div>
+          <div class="order-actions">
+            <button class="order-btn" data-move="up" data-key="${key}" ${index === 0 ? 'disabled' : ''}>↑</button>
+            <button class="order-btn" data-move="down" data-key="${key}" ${index === socialOrder.length - 1 ? 'disabled' : ''}>↓</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function moveSocial(key, direction) {
+      const index = socialOrder.indexOf(key);
+      if (index === -1) return;
+      const target = direction === 'up' ? index - 1 : index + 1;
+      if (target < 0 || target >= socialOrder.length) return;
+      [socialOrder[index], socialOrder[target]] = [socialOrder[target], socialOrder[index]];
+      renderOrderList(); render(); renderBulk();
+    }
+
+    function getFormData() { return Object.fromEntries(fieldIds.map(id => [id, els[id].value.trim()])); }
+
+    function getSettings() {
+      return {
+        showEmail: toggles.showEmail.checked,
+        showPhone: toggles.showPhone.checked,
+        showAddress: toggles.showAddress.checked,
+        showCertificate: toggles.showCertificate.checked,
+        showLogo: toggles.showLogo.checked,
+        showLinkedin: toggles.showLinkedin.checked,
+        showFacebook: toggles.showFacebook.checked,
+        showInstagram: toggles.showInstagram.checked,
+        showWhatsapp: toggles.showWhatsapp.checked,
+        showYoutube: toggles.showYoutube.checked,
+        showSiteIcon: toggles.showSiteIcon.checked,
+        showTiktok: toggles.showTiktok.checked,
+        showName: toggles.showName.checked,
+        showRoleText: toggles.showRoleText.checked,
+        showEmailText: toggles.showEmailText.checked,
+        showPhoneText: toggles.showPhoneText.checked,
+        showAddressText: toggles.showAddressText.checked,
+        showSiteLabelText: toggles.showSiteLabelText.checked,
+        showEmailIcon: toggles.showEmailIcon.checked,
+        showPhoneIcon: toggles.showPhoneIcon.checked,
+        showAddressIcon: toggles.showAddressIcon.checked,
+        certificateWidth: Number(sizes.certificateWidth.value || 82),
+        certificateHeight: Number(sizes.certificateHeight.value || 116),
+        logoWidth: Number(sizes.logoWidth.value || 125),
+        socialIconSize: Number(sizes.socialIconSize.value || 19),
+        nameSize: Number(sizes.nameSize.value || 19),
+        roleSize: Number(sizes.roleSize.value || 11.26),
+        emailSize: Number(sizes.emailSize.value || 16),
+        phoneSize: Number(sizes.phoneSize.value || 16),
+        addressSize: Number(sizes.addressSize.value || 9),
+        siteLabelSize: Number(sizes.siteLabelSize.value || 10.09),
+        emailIconSize: Number(sizes.emailIconSize.value || 24.57),
+        phoneIconSize: Number(sizes.phoneIconSize.value || 25.49),
+        addressIconSize: Number(sizes.addressIconSize.value || 24.57),
+        nameColor: colors.nameColor.value || '#26478A',
+        roleColor: colors.roleColor.value || '#8CC63F',
+        emailColor: colors.emailColor.value || '#666666',
+        phoneColor: colors.phoneColor.value || '#666666',
+        addressColor: colors.addressColor.value || '#666666',
+        siteLabelColor: colors.siteLabelColor.value || '#26478A'
+      };
+    }
+
+    function normalizeData(input = {}) {
+      const base = getFormData();
+      return Object.fromEntries(fieldIds.map(id => [id, (input[id] ?? base[id] ?? '').toString().trim()]));
+    }
+
+    function socialIcon(src, link, size) {
+      return `<a href="${esc(link)}" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;"><img src="${src}" width="${size}" height="${size}" style="display:block;"></a>`;
+    }
+
+    function buildSignature(input = null) {
+      const data = normalizeData(input || getFormData());
+      const cfg = getSettings();
+
+      const fullName = `${data.firstName} ${data.lastName}`.trim();
+      const nameBlock = cfg.showName ? `<div style="align-self:stretch;display:block;color:${esc(cfg.nameColor)};font-size:${cfg.nameSize}px;font-family:Arial,Helvetica,sans-serif;font-weight:900;text-transform:capitalize;line-height:28.83px;white-space:normal;word-break:normal;overflow-wrap:break-word;">${esc(fullName)}</div>` : '';
+      const roleBlock = cfg.showRoleText ? `<div style="align-self:stretch;justify-content:center;display:flex;flex-direction:column;color:${esc(cfg.roleColor)};font-size:${cfg.roleSize}px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:17.57px;letter-spacing:0.34px;word-wrap:break-word;">${esc(data.role)}</div>` : '';
+
+      const iconSlot = 30;
+      const emailIcon = cfg.showEmailIcon ? `<div style="width:${iconSlot}px;min-width:${iconSlot}px;display:flex;justify-content:flex-start;align-items:center;"><img src="${ICONS.email}" style="width:${cfg.emailIconSize}px;height:${cfg.emailIconSize}px;display:block;object-fit:contain;" /></div>` : '';
+      const phoneIcon = cfg.showPhoneIcon ? `<div style="width:${iconSlot}px;min-width:${iconSlot}px;display:flex;justify-content:flex-start;align-items:center;"><img src="${ICONS.phone}" style="width:${cfg.phoneIconSize}px;height:${cfg.phoneIconSize}px;display:block;object-fit:contain;" /></div>` : '';
+      const addressIcon = cfg.showAddressIcon ? `<div style="width:${iconSlot}px;min-width:${iconSlot}px;display:flex;justify-content:flex-start;align-items:center;"><img src="${ICONS.address}" style="width:${cfg.addressIconSize}px;height:${cfg.addressIconSize}px;display:block;object-fit:contain;" /></div>` : '';
+
+      const infoRows = [
+        cfg.showEmail ? `<div style="min-height:26px;justify-content:flex-start;align-items:center;gap:9.35px;display:flex;width:100%;">${emailIcon}${cfg.showEmailText ? `<div style="width:314px;display:flex;align-items:center;color:${esc(cfg.emailColor)};font-size:${cfg.emailSize}px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:lowercase;line-height:30.38px;letter-spacing:0.48px;word-wrap:break-word;">${esc(data.email)}</div>` : ''}</div>` : '',
+        cfg.showPhone ? `<div style="min-height:26px;justify-content:flex-start;align-items:center;gap:9.35px;display:flex;width:100%;">${phoneIcon}${cfg.showPhoneText ? `<div style="width:117px;display:flex;align-items:center;color:${esc(cfg.phoneColor)};font-size:${cfg.phoneSize}px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:30.38px;letter-spacing:0.48px;word-wrap:break-word;">${esc(data.phone)}</div>` : ''}</div>` : '',
+        cfg.showAddress ? `<div style="min-height:26px;justify-content:flex-start;align-items:center;gap:9.35px;display:flex;width:100%;">${addressIcon}${cfg.showAddressText ? `<div style="width:441.23px;color:${esc(cfg.addressColor)};font-size:${cfg.addressSize}px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:17px;letter-spacing:0.27px;word-wrap:break-word;">${esc(data.address)}</div>` : ''}</div>` : ''
+      ].filter(Boolean).join('');
+
+      const socialRows = socialOrder.map(key => {
+        const meta = SOCIAL_META[key];
+        const toggleOn = cfg[meta.toggle];
+        if (!toggleOn) return '';
+        return socialIcon(meta.icon, data[meta.linkField], cfg.socialIconSize);
+      }).filter(Boolean).join('');
+
+      const siteLabelBlock = cfg.showSiteLabelText ? `<div style="width:282.20px;text-align:center;color:${esc(cfg.siteLabelColor)};font-size:${cfg.siteLabelSize}px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:27.86px;letter-spacing:0.81px;word-wrap:break-word;">${esc(data.siteLabel)}</div>` : '';
+
+      return `
+<div style="width:100%;height:100%;padding-top:22.59px;padding-bottom:19.48px;padding-left:30px;padding-right:21.04px;background:#F7F7F7;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:14px;display:inline-flex;font-family:Arial,Helvetica,sans-serif;">
+ <div style="width:738px;height:91px;justify-content:flex-start;align-items:flex-start;gap:11px;display:inline-flex;">
+  <div style="width:214px;padding-top:8px;padding-bottom:8px;flex-direction:column;justify-content:center;align-items:flex-start;display:inline-flex;">${nameBlock}${roleBlock}</div>
+  <div style="width:404px;height:96px;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:0.78px;display:inline-flex;">${infoRows}</div>
+ </div>
+ <div style="width:738px;height:80px;padding-left:16px;padding-right:16px;background:#EBEBEB;border-radius:10px;justify-content:flex-start;align-items:center;gap:35px;display:inline-flex;">
+  ${cfg.showLogo ? `<img style="width:${cfg.logoWidth}px;height:auto;display:block;" src="${ICONS.logo}" />` : ''}
+  <div style="width:180.65px;height:20.17px;justify-content:center;align-items:center;gap:8.57px;display:flex;">${siteLabelBlock}</div>
+  <div style="width:204.13px;min-height:${cfg.socialIconSize}px;justify-content:space-between;align-items:center;display:flex;gap:8px;flex-wrap:wrap;">${socialRows}</div>
+  ${cfg.showCertificate ? `<img style="width:${cfg.certificateWidth}px;height:${cfg.certificateHeight}px;display:block;object-fit:cover;" src="${ICONS.certificate}" />` : ''}
+ </div>
+</div>`.trim();
+    }
+
+    function render() {
+      const html = buildSignature();
+      preview.innerHTML = html;
+      copyFallback.value = html;
+    }
+
+    async function copyText(text, messageTarget, message) {
+      copyFallback.value = text;
+      try {
+        await navigator.clipboard.writeText(text);
+        messageTarget.textContent = message;
+        return true;
+      } catch (err) {
+        try {
+          copyFallback.focus();
+          copyFallback.select();
+          copyFallback.setSelectionRange(0, copyFallback.value.length);
+          const ok = document.execCommand('copy');
+          if (ok) {
+            messageTarget.textContent = `${message} (fallback)`;
+            return true;
+          }
+        } catch (_) {}
+        messageTarget.textContent = 'Não consegui copiar automaticamente. Use o campo de backup para copiar manualmente.';
+        return false;
+      }
+    }
+
+    function downloadText(filename, content, type = 'text/html') {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+    }
+
+    function slugify(value = '') { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'assinatura'; }
+
+    function parseCSVLine(line) {
+      const result = []; let current = ''; let insideQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]; const next = line[i + 1];
+        if (char === '"') {
+          if (insideQuotes && next === '"') { current += '"'; i++; } else { insideQuotes = !insideQuotes; }
+        } else if (char === ',' && !insideQuotes) { result.push(current); current = ''; }
+        else { current += char; }
+      }
+      result.push(current); return result.map(item => item.trim());
+    }
+
+    function parseCSV(text) {
+      const lines = text.replace(/\r/g, '').split('\n').filter(Boolean);
+      if (lines.length < 2) return { headers: [], rows: [] };
+      const headers = parseCSVLine(lines[0]);
+      const rows = lines.slice(1).map(line => {
+        const values = parseCSVLine(line); const row = {};
+        headers.forEach((header, index) => row[header] = values[index] || '');
+        return row;
+      });
+      return { headers, rows };
+    }
+
+    function validateCsv(headers, rows) {
+      const required = ['firstName', 'lastName', 'role', 'phone', 'email'];
+      const missing = required.filter(h => !headers.includes(h));
+      const rowErrors = [];
+      rows.forEach((row, idx) => {
+        const missingFields = required.filter(h => !(row[h] || '').trim());
+        if (missingFields.length) {
+          rowErrors.push(`Linha ${idx + 2}: faltando ${missingFields.join(', ')}`);
+        }
+      });
+      return { missing, rowErrors };
+    }
+
+    function renderBulk() {
+      if (!bulkRows.length) {
+        bulkList.innerHTML = '<div class="hint">Quando você importar um CSV, as assinaturas aparecerão aqui.</div>';
+        downloadBulkHtml.disabled = true; return;
+      }
+      downloadBulkHtml.disabled = false;
+      bulkList.innerHTML = bulkRows.map((row, index) => {
+        const sig = buildSignature(row); const title = `${row.firstName || ''} ${row.lastName || ''}`.trim() || 'Sem nome';
+        return `<div class="bulk-card"><div class="bulk-card-header"><div class="bulk-card-title">${esc(title)}${row.email ? ' · ' + esc(row.email) : ''}</div><div class="bulk-card-actions"><button class="mini-btn mini-dark" data-action="copy-html" data-index="${index}">Copiar HTML</button><button class="mini-btn mini-light" data-action="download-html" data-index="${index}">Baixar</button></div></div><div class="preview-shell">${sig}</div></div>`;
+      }).join('');
+    }
+
+    function buildBulkDocument() { return bulkRows.map(row => `<!-- ${(row.firstName || '') + ' ' + (row.lastName || '')} -->\n${buildSignature(row)}\n`).join('\n\n'); }
+
+    function importParsedCsv(parsed) {
+      const validation = validateCsv(parsed.headers, parsed.rows);
+
+      if (validation.missing.length) {
+        bulkRows = [];
+        renderBulk();
+        bulkStatus.textContent = `CSV inválido. Colunas obrigatórias ausentes: ${validation.missing.join(', ')}.`;
+        return false;
+      }
+
+      if (validation.rowErrors.length) {
+        bulkRows = [];
+        renderBulk();
+        bulkStatus.textContent = `CSV com erro: ${validation.rowErrors.slice(0, 3).join(' | ')}${validation.rowErrors.length > 3 ? ' ...' : ''}`;
+        return false;
+      }
+
+      const rows = parsed.rows.map(normalizeData);
+      bulkRows = rows.filter(row => Object.values(row).some(Boolean));
+      renderBulk();
+      bulkStatus.textContent = `${bulkRows.length} assinatura(s) importada(s) do CSV.`;
+      return true;
+    }
+
+    document.getElementById('copyHtml').addEventListener('click', () => copyText(buildSignature(), status, 'HTML copiado.'));
+    document.getElementById('copyPreview').addEventListener('click', async () => {
+      const html = buildSignature();
+      copyFallback.value = html;
+      try {
+        const item = new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([html], { type: 'text/plain' }) });
+        await navigator.clipboard.write([item]);
+        status.textContent = 'Assinatura copiada para colar no e-mail.';
+      } catch (err) {
+        await copyText(html, status, 'Copiei o HTML como fallback.');
+      }
+    });
+    document.getElementById('downloadHtml').addEventListener('click', () => { downloadText('assinatura-talisma.html', buildSignature()); status.textContent = 'Arquivo HTML baixado.'; });
+    document.getElementById('downloadSampleCsv').addEventListener('click', () => { downloadText('modelo-assinaturas.csv', sampleCsv, 'text/csv;charset=utf-8'); bulkStatus.textContent = 'CSV modelo baixado.'; });
+    downloadBulkHtml.addEventListener('click', () => { downloadText('assinaturas-em-lote.html', buildBulkDocument()); bulkStatus.textContent = `Lote com ${bulkRows.length} assinatura(s) baixado.`; });
+
+    csvFile.addEventListener('change', async (event) => {
+      const file = event.target.files[0]; if (!file) return;
+      const text = await file.text();
+      const parsed = parseCSV(text);
+      importParsedCsv(parsed);
+    });
+
+    importCsvUrlBtn.addEventListener('click', async () => {
+      const url = csvUrl.value.trim();
+      if (!url) {
+        bulkStatus.textContent = 'Informe uma URL CSV para importar.';
+        return;
+      }
+
+      try {
+        bulkStatus.textContent = 'Buscando CSV da URL...';
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        const parsed = parseCSV(text);
+        importParsedCsv(parsed);
+      } catch (error) {
+        bulkRows = [];
+        renderBulk();
+        bulkStatus.textContent = `Não consegui importar pela URL. Verifique se o link é um CSV público. (${error.message})`;
+      }
+    });
+
+    bulkList.addEventListener('click', async (event) => {
+      const button = event.target.closest('button[data-index]'); if (!button) return;
+      const index = Number(button.dataset.index); const row = bulkRows[index]; if (!row) return;
+      const html = buildSignature(row); const name = `${row.firstName || ''} ${row.lastName || ''}`.trim() || 'assinatura';
+      if (button.dataset.action === 'copy-html') await copyText(html, bulkStatus, `HTML de ${name} copiado.`);
+      if (button.dataset.action === 'download-html') { downloadText(`${slugify(name)}.html`, html); bulkStatus.textContent = `Arquivo de ${name} baixado.`; }
+    });
+
+    orderList.addEventListener('click', (event) => {
+      const btn = event.target.closest('button[data-move]'); if (!btn) return;
+      moveSocial(btn.dataset.key, btn.dataset.move);
+    });
+
+    [...fieldIds, ...toggleIds, ...sizeIds, ...colorIds].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => { render(); renderBulk(); });
+      document.getElementById(id).addEventListener('change', () => { render(); renderBulk(); });
+    });
+
+    renderOrderList();
+    render();
+    renderBulk();
+  </script>
+</body>
+</html>

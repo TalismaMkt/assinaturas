@@ -5,3 +5,4 @@
 - Marca autoral: QConverte (agência) focada em branding estratégico, marketing digital, conteúdo orientado a resultado, IA, funis e automações.
 - Diferenciais: visão híbrida arte+estratégia, foco em ROI/vendas, construtor de marcas do zero, base prática de gráfica.
 - Próximo nível: fortalecer autoridade pública, consolidar QConverte, posicionar-se como mentor/estrategista e cobrar como estrategista.
+- Albert quer que eu lembre de tudo para evitar repetição e que vamos construir algo grande.

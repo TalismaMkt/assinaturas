@@ -1,0 +1,947 @@
+{
+  "updatedAt": "2026-02-10T11:55:17.064Z",
+  "createdAt": "2025-10-08T11:33:37.669Z",
+  "id": "BSEA3p5HQJEXGlQh",
+  "name": "Stories Post - Pickup",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dsoquqv7f/image/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "value": "=data:image/png;base64,{{ $json.b64_json }}"
+            },
+            {
+              "name": "upload_preset",
+              "value": "n8nupload"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1936,
+        160
+      ],
+      "id": "63dbea22-6a0a-41c3-8365-9ec28bfe637f",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "xuYU1nCoEApD3Sj0",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        160
+      ],
+      "id": "c4fb891f-df90-4aaa-9132-c5bbb22cdc40",
+      "name": "Wait1",
+      "webhookId": "f3a660c1-9f43-4cc3-8bbe-532cec60d605"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841431564239081",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        160
+      ],
+      "id": "e2a112ba-6372-4de5-bbd6-65ff6b8adfc9",
+      "name": "Facebook Graph API2",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "0hNsc8zbYCGLOeFN",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "destinationKey": "b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        160
+      ],
+      "id": "73d556ed-a689-432a-a7f3-f8098b8ab993",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        416
+      ],
+      "id": "a913f9a7-f803-451a-b432-e86b4c5ad384",
+      "name": "Wait2",
+      "webhookId": "5dcddc82-fc87-49b3-8677-75ebe3cf2cfa"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841445486154726",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        416
+      ],
+      "id": "d0ca7c19-99c9-43db-a21d-b660d4b7a525",
+      "name": "Facebook Graph API3",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "0hNsc8zbYCGLOeFN",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "17841431564239081",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "image_url",
+                "value": "={{ $('HTTP Request').item.json.url }}"
+              },
+              {
+                "name": "media_type",
+                "value": "=STORIES"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        160
+      ],
+      "id": "a21f21a0-a166-4b26-9156-8b4624063c4d",
+      "name": "Postar no Istories",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "0hNsc8zbYCGLOeFN",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841445486154726",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "image_url",
+                "value": "={{ $('HTTP Request').item.json.url }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Conteúdo Terca').item.json.text }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        416
+      ],
+      "id": "0ab3f80e-1254-422c-af31-d092f6f9547e",
+      "name": "Postar no feed",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "0hNsc8zbYCGLOeFN",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "limit": 1,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "13QrcW57F9kd8G_m13Ne-kQIpdP9D99S6",
+            "mode": "list",
+            "cachedResultName": "Postar",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/13QrcW57F9kd8G_m13Ne-kQIpdP9D99S6"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        160
+      ],
+      "id": "1852cf3c-c401-4a94-867b-6d4e9607cc22",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "b4vSBZr3YTdrsy1h",
+          "name": "Google Drive AgenteN8NImagem"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        160
+      ],
+      "id": "de909a48-8897-479e-b6b7-869fdd74838e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1552,
+        160
+      ],
+      "id": "c0e60917-b992-4b6a-9415-0d7e8145ec8d",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "b4vSBZr3YTdrsy1h",
+          "name": "Google Drive AgenteN8NImagem"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2640,
+        160
+      ],
+      "id": "4b72e27b-10aa-4e52-90c8-f770eb518a3e",
+      "name": "Delete a file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "b4vSBZr3YTdrsy1h",
+          "name": "Google Drive AgenteN8NImagem"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Postar no Istories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postar no Istories": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postar no feed": {
+      "main": [
+        []
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Graph API2": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-06-11T16:37:31Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9ac21634-9b77-4926-887a-129a1dfce959",
+  "activeVersionId": "9ac21634-9b77-4926-887a-129a1dfce959",
+  "versionCounter": 12,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-08T11:33:37.676Z",
+      "createdAt": "2025-10-08T11:33:37.676Z",
+      "role": "workflow:owner",
+      "workflowId": "BSEA3p5HQJEXGlQh",
+      "projectId": "5uxFT9ijpbwiXQj4",
+      "project": {
+        "updatedAt": "2025-05-26T15:18:16.081Z",
+        "createdAt": "2025-05-26T15:17:41.347Z",
+        "id": "5uxFT9ijpbwiXQj4",
+        "name": "Dihon Lima <lima.dihon@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2025-05-26T15:17:41.347Z",
+            "createdAt": "2025-05-26T15:17:41.347Z",
+            "userId": "8ba652e7-6b08-42da-b61f-d6d27c5137c0",
+            "projectId": "5uxFT9ijpbwiXQj4",
+            "user": {
+              "updatedAt": "2026-03-29T14:06:49.000Z",
+              "createdAt": "2025-05-26T15:17:40.654Z",
+              "id": "8ba652e7-6b08-42da-b61f-d6d27c5137c0",
+              "email": "lima.dihon@gmail.com",
+              "firstName": "Dihon",
+              "lastName": "Lima",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2025-05-26T15:21:56.611Z",
+                "personalization_survey_n8n_version": "1.93.0",
+                "companySize": "<20",
+                "companyType": "saas",
+                "role": "business-owner",
+                "reportedSource": "google"
+              },
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "JzWyi7YPxNruPutZ",
+                "userActivatedAt": 1748581721436,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1766947617961
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-03-29",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-11T09:07:41.321Z",
+    "createdAt": "2025-12-11T09:07:41.321Z",
+    "versionId": "9ac21634-9b77-4926-887a-129a1dfce959",
+    "workflowId": "BSEA3p5HQJEXGlQh",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.cloudinary.com/v1_1/dsoquqv7f/image/upload",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "file",
+                "value": "=data:image/png;base64,{{ $json.b64_json }}"
+              },
+              {
+                "name": "upload_preset",
+                "value": "n8nupload"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1936,
+          160
+        ],
+        "id": "63dbea22-6a0a-41c3-8365-9ec28bfe637f",
+        "name": "HTTP Request",
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "xuYU1nCoEApD3Sj0",
+            "name": "Unnamed credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 3
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          2272,
+          160
+        ],
+        "id": "c4fb891f-df90-4aaa-9132-c5bbb22cdc40",
+        "name": "Wait1",
+        "webhookId": "f3a660c1-9f43-4cc3-8bbe-532cec60d605"
+      },
+      {
+        "parameters": {
+          "httpRequestMethod": "POST",
+          "graphApiVersion": "v22.0",
+          "node": "17841431564239081",
+          "edge": "media_publish",
+          "options": {
+            "queryParameters": {
+              "parameter": [
+                {
+                  "name": "creation_id",
+                  "value": "={{ $json.id }}"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.facebookGraphApi",
+        "typeVersion": 1,
+        "position": [
+          2448,
+          160
+        ],
+        "id": "e2a112ba-6372-4de5-bbd6-65ff6b8adfc9",
+        "name": "Facebook Graph API2",
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "0hNsc8zbYCGLOeFN",
+            "name": "Facebook Graph account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "binaryToPropery",
+          "destinationKey": "b64_json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          1744,
+          160
+        ],
+        "id": "73d556ed-a689-432a-a7f3-f8098b8ab993",
+        "name": "Extract from File"
+      },
+      {
+        "parameters": {
+          "amount": 3
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          2272,
+          416
+        ],
+        "id": "a913f9a7-f803-451a-b432-e86b4c5ad384",
+        "name": "Wait2",
+        "webhookId": "5dcddc82-fc87-49b3-8677-75ebe3cf2cfa"
+      },
+      {
+        "parameters": {
+          "httpRequestMethod": "POST",
+          "graphApiVersion": "v22.0",
+          "node": "17841445486154726",
+          "edge": "media_publish",
+          "options": {
+            "queryParameters": {
+              "parameter": [
+                {
+                  "name": "creation_id",
+                  "value": "={{ $json.id }}"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.facebookGraphApi",
+        "typeVersion": 1,
+        "position": [
+          2448,
+          416
+        ],
+        "id": "d0ca7c19-99c9-43db-a21d-b660d4b7a525",
+        "name": "Facebook Graph API3",
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "0hNsc8zbYCGLOeFN",
+            "name": "Facebook Graph account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpRequestMethod": "POST",
+          "graphApiVersion": "v23.0",
+          "node": "17841431564239081",
+          "edge": "media",
+          "options": {
+            "queryParameters": {
+              "parameter": [
+                {
+                  "name": "image_url",
+                  "value": "={{ $('HTTP Request').item.json.url }}"
+                },
+                {
+                  "name": "media_type",
+                  "value": "=STORIES"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.facebookGraphApi",
+        "typeVersion": 1,
+        "position": [
+          2112,
+          160
+        ],
+        "id": "a21f21a0-a166-4b26-9156-8b4624063c4d",
+        "name": "Postar no Istories",
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "0hNsc8zbYCGLOeFN",
+            "name": "Facebook Graph account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpRequestMethod": "POST",
+          "graphApiVersion": "v22.0",
+          "node": "17841445486154726",
+          "edge": "media",
+          "options": {
+            "queryParameters": {
+              "parameter": [
+                {
+                  "name": "image_url",
+                  "value": "={{ $('HTTP Request').item.json.url }}"
+                },
+                {
+                  "name": "caption",
+                  "value": "={{ $('Conteúdo Terca').item.json.text }}"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.facebookGraphApi",
+        "typeVersion": 1,
+        "position": [
+          2096,
+          416
+        ],
+        "id": "0ab3f80e-1254-422c-af31-d092f6f9547e",
+        "name": "Postar no feed",
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "0hNsc8zbYCGLOeFN",
+            "name": "Facebook Graph account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "fileFolder",
+          "searchMethod": "query",
+          "limit": 1,
+          "filter": {
+            "folderId": {
+              "__rl": true,
+              "value": "13QrcW57F9kd8G_m13Ne-kQIpdP9D99S6",
+              "mode": "list",
+              "cachedResultName": "Postar",
+              "cachedResultUrl": "https://drive.google.com/drive/folders/13QrcW57F9kd8G_m13Ne-kQIpdP9D99S6"
+            }
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1328,
+          160
+        ],
+        "id": "1852cf3c-c401-4a94-867b-6d4e9607cc22",
+        "name": "Search files and folders",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "b4vSBZr3YTdrsy1h",
+            "name": "Google Drive AgenteN8NImagem"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "seconds",
+                "secondsInterval": 20
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          1072,
+          160
+        ],
+        "id": "de909a48-8897-479e-b6b7-869fdd74838e",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1552,
+          160
+        ],
+        "id": "c0e60917-b992-4b6a-9415-0d7e8145ec8d",
+        "name": "Download file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "b4vSBZr3YTdrsy1h",
+            "name": "Google Drive AgenteN8NImagem"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "deleteFile",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $('Search files and folders').item.json.id }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          2640,
+          160
+        ],
+        "id": "4b72e27b-10aa-4e52-90c8-f770eb518a3e",
+        "name": "Delete a file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "b4vSBZr3YTdrsy1h",
+            "name": "Google Drive AgenteN8NImagem"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Postar no Istories",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait1": {
+        "main": [
+          [
+            {
+              "node": "Facebook Graph API2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait2": {
+        "main": [
+          [
+            {
+              "node": "Facebook Graph API3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postar no Istories": {
+        "main": [
+          [
+            {
+              "node": "Wait1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postar no feed": {
+        "main": [
+          []
+        ]
+      },
+      "Search files and folders": {
+        "main": [
+          [
+            {
+              "node": "Download file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Search files and folders",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Facebook Graph API2": {
+        "main": [
+          [
+            {
+              "node": "Delete a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}
