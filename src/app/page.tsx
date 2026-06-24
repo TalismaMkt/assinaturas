@@ -27,7 +27,15 @@ type Template = {
   tiktok?: string | null;
   logo_url?: string | null;
   certificate_url?: string | null;
-  settings?: Record<string, unknown>;
+  settings?: {
+    nameSize?: number;
+    roleSize?: number;
+    emailSize?: number;
+    phoneSize?: number;
+    addressSize?: number;
+    siteLabelSize?: number;
+    [key: string]: unknown;
+  };
 };
 
 const ICONS = {
@@ -127,30 +135,39 @@ function validateCsv(headers: string[], rows: Record<string, string>[]) {
 }
 
 function buildSignatureHtml(profile: Profile, template: Template) {
+  const settings = {
+    nameSize: Number(template.settings?.nameSize ?? 19),
+    roleSize: Number(template.settings?.roleSize ?? 11.26),
+    emailSize: Number(template.settings?.emailSize ?? 16),
+    phoneSize: Number(template.settings?.phoneSize ?? 16),
+    addressSize: Number(template.settings?.addressSize ?? 9),
+    siteLabelSize: Number(template.settings?.siteLabelSize ?? 10.09),
+  };
+
   return `
-<div style="width:100%;padding-top:22.59px;padding-bottom:19.48px;padding-left:30px;padding-right:21.04px;background:#F7F7F7;display:inline-flex;flex-direction:column;gap:14px;font-family:Arial,Helvetica,sans-serif;">
- <div style="width:738px;display:inline-flex;gap:11px;align-items:flex-start;">
+<div style="width:100%;height:100%;padding-top:22.59px;padding-bottom:19.48px;padding-left:30px;padding-right:21.04px;background:#F7F7F7;display:inline-flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:14px;font-family:Arial,Helvetica,sans-serif;">
+ <div style="width:738px;height:91px;display:inline-flex;justify-content:flex-start;align-items:flex-start;gap:11px;">
   <div style="width:214px;padding-top:8px;padding-bottom:8px;display:inline-flex;flex-direction:column;justify-content:center;align-items:flex-start;">
-   <div style="color:#26478A;font-size:19px;font-weight:900;line-height:28.83px;overflow-wrap:break-word;">${esc(`${profile.first_name} ${profile.last_name}`.trim())}</div>
-   <div style="color:#8CC63F;font-size:11.26px;text-transform:uppercase;line-height:17.57px;letter-spacing:0.34px;">${esc(profile.role)}</div>
+   <div style="align-self:stretch;display:block;color:#26478A;font-size:19px;font-family:Arial,Helvetica,sans-serif;font-weight:900;text-transform:capitalize;line-height:28.83px;white-space:normal;word-break:normal;overflow-wrap:break-word;">${esc(`${profile.first_name} ${profile.last_name}`.trim())}</div>
+   <div style="align-self:stretch;display:flex;flex-direction:column;color:#8CC63F;font-size:11.26px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:17.57px;letter-spacing:0.34px;word-wrap:break-word;">${esc(profile.role)}</div>
   </div>
-  <div style="width:404px;display:inline-flex;flex-direction:column;gap:6px;">
-   <div style="display:flex;align-items:center;gap:9.35px;"><div style="width:30px"><img src="${ICONS.email}" style="width:24px;height:24px;display:block;object-fit:contain;" /></div><div style="color:#666666;font-size:16px;line-height:30.38px;">${esc(profile.email)}</div></div>
-   <div style="display:flex;align-items:center;gap:9.35px;"><div style="width:30px"><img src="${ICONS.phone}" style="width:25px;height:25px;display:block;object-fit:contain;" /></div><div style="color:#666666;font-size:16px;line-height:30.38px;">${esc(profile.phone)}</div></div>
-   <div style="display:flex;align-items:center;gap:9.35px;"><div style="width:30px"><img src="${ICONS.address}" style="width:24px;height:24px;display:block;object-fit:contain;" /></div><div style="color:#666666;font-size:9px;line-height:17px;letter-spacing:0.27px;text-transform:uppercase;">${esc(template.address || "")}</div></div>
+  <div style="width:404px;height:96px;display:inline-flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:0.78px;">
+   <div style="min-height:26px;justify-content:flex-start;align-items:center;gap:9.35px;display:flex;width:100%;"><div style="width:30px;min-width:30px;display:flex;justify-content:flex-start;align-items:center;"><img src="${ICONS.email}" style="width:24px;height:24px;display:block;object-fit:contain;" /></div><div style="width:314px;display:flex;align-items:center;color:#666666;font-size:16px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:lowercase;line-height:30.38px;letter-spacing:0.48px;word-wrap:break-word;">${esc(profile.email)}</div></div>
+   <div style="min-height:26px;justify-content:flex-start;align-items:center;gap:9.35px;display:flex;width:100%;"><div style="width:30px;min-width:30px;display:flex;justify-content:flex-start;align-items:center;"><img src="${ICONS.phone}" style="width:25px;height:25px;display:block;object-fit:contain;" /></div><div style="width:117px;display:flex;align-items:center;color:#666666;font-size:16px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:30.38px;letter-spacing:0.48px;word-wrap:break-word;">${esc(profile.phone)}</div></div>
+   <div style="min-height:26px;justify-content:flex-start;align-items:center;gap:9.35px;display:flex;width:100%;"><div style="width:30px;min-width:30px;display:flex;justify-content:flex-start;align-items:center;"><img src="${ICONS.address}" style="width:24px;height:24px;display:block;object-fit:contain;" /></div><div style="width:441.23px;color:#666666;font-size:9px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:17px;letter-spacing:0.27px;word-wrap:break-word;">${esc(template.address || "")}</div></div>
   </div>
  </div>
- <div style="width:738px;height:80px;padding-left:16px;padding-right:16px;background:#EBEBEB;border-radius:10px;display:inline-flex;align-items:center;gap:35px;">
+ <div style="width:738px;height:80px;padding-left:16px;padding-right:16px;background:#EBEBEB;border-radius:10px;justify-content:flex-start;align-items:center;gap:35px;display:inline-flex;">
   <img style="width:125px;height:auto;display:block;" src="${esc(template.logo_url || ICONS.logo)}" />
-  <div style="width:180.65px;display:flex;justify-content:center;align-items:center;"><div style="width:282.20px;text-align:center;color:#26478A;font-size:10.09px;text-transform:uppercase;line-height:27.86px;letter-spacing:0.81px;">${esc(template.site_label || "")}</div></div>
-  <div style="width:204.13px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-    <a href="${esc(template.linkedin || "#")}"><img src="${ICONS.linkedin}" width="19" height="19" style="display:block;" /></a>
-    <a href="${esc(template.facebook || "#")}"><img src="${ICONS.facebook}" width="19" height="19" style="display:block;" /></a>
-    <a href="${esc(template.instagram || "#")}"><img src="${ICONS.instagram}" width="19" height="19" style="display:block;" /></a>
-    <a href="${esc(template.whatsapp || "#")}"><img src="${ICONS.whatsapp}" width="19" height="19" style="display:block;" /></a>
-    <a href="${esc(template.youtube || "#")}"><img src="${ICONS.youtube}" width="19" height="19" style="display:block;" /></a>
-    <a href="${esc(template.site || "#")}"><img src="${ICONS.site}" width="19" height="19" style="display:block;" /></a>
-    <a href="${esc(template.tiktok || "#")}"><img src="${ICONS.tiktok}" width="19" height="19" style="display:block;" /></a>
+  <div style="width:180.65px;height:20.17px;justify-content:center;align-items:center;gap:8.57px;display:flex;"><div style="width:282.20px;text-align:center;color:#26478A;font-size:10.09px;font-family:Arial,Helvetica,sans-serif;font-weight:400;text-transform:uppercase;line-height:27.86px;letter-spacing:0.81px;word-wrap:break-word;">${esc(template.site_label || "")}</div></div>
+  <div style="width:204.13px;min-height:19px;justify-content:space-between;align-items:center;display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="${esc(template.linkedin || "#")}" target="_blank"><img src="${ICONS.linkedin}" width="19" height="19" style="display:block;" /></a>
+    <a href="${esc(template.facebook || "#")}" target="_blank"><img src="${ICONS.facebook}" width="19" height="19" style="display:block;" /></a>
+    <a href="${esc(template.instagram || "#")}" target="_blank"><img src="${ICONS.instagram}" width="19" height="19" style="display:block;" /></a>
+    <a href="${esc(template.whatsapp || "#")}" target="_blank"><img src="${ICONS.whatsapp}" width="19" height="19" style="display:block;" /></a>
+    <a href="${esc(template.youtube || "#")}" target="_blank"><img src="${ICONS.youtube}" width="19" height="19" style="display:block;" /></a>
+    <a href="${esc(template.site || "#")}" target="_blank"><img src="${ICONS.site}" width="19" height="19" style="display:block;" /></a>
+    <a href="${esc(template.tiktok || "#")}" target="_blank"><img src="${ICONS.tiktok}" width="19" height="19" style="display:block;" /></a>
   </div>
   <img style="width:82px;height:116px;display:block;object-fit:cover;" src="${esc(template.certificate_url || ICONS.certificate)}" />
  </div>
@@ -167,6 +184,7 @@ export default function Home() {
   const [copyFallback, setCopyFallback] = useState("");
   const [lastImportedEmails, setLastImportedEmails] = useState<string[]>([]);
 
+  const currentProfileIndex = useMemo(() => profiles.findIndex((item) => item.email === profile.email), [profiles, profile.email]);
   const html = useMemo(() => buildSignatureHtml(profile, template), [profile, template]);
 
   useEffect(() => {
@@ -260,9 +278,7 @@ export default function Home() {
 
     if (res.ok && json?.ok) {
       await loadProfiles();
-      if (rows[0]) {
-        setProfile(rows[0]);
-      }
+      if (rows[0]) setProfile(rows[0]);
       setLastImportedEmails(rows.map((row) => row.email));
       setBulkStatus(`${rows.length} perfil(is) importado(s) e salvo(s) com sucesso.`);
     } else {
@@ -270,11 +286,17 @@ export default function Home() {
     }
   }
 
+  function goToProfile(direction: "prev" | "next") {
+    if (!profiles.length) return;
+    const current = currentProfileIndex >= 0 ? currentProfileIndex : 0;
+    const nextIndex = direction === "prev" ? (current - 1 + profiles.length) % profiles.length : (current + 1) % profiles.length;
+    setProfile(profiles[nextIndex]);
+  }
+
   async function copyText(text: string) {
     try {
       await navigator.clipboard.writeText(text);
       setStatus("HTML copiado.");
-      return;
     } catch {
       setStatus("Não consegui copiar automaticamente. Use o campo de backup.");
     }
@@ -307,6 +329,14 @@ export default function Home() {
                 <label className="text-sm"><span className="mb-1 block font-medium">Nome do template</span><input value={template.name || "default"} onChange={(e) => setTemplate((t) => ({ ...t, name: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
                 <label className="text-sm"><span className="mb-1 block font-medium">Frase central</span><input value={template.site_label || ""} onChange={(e) => setTemplate((t) => ({ ...t, site_label: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
                 <label className="text-sm"><span className="mb-1 block font-medium">Endereço</span><input value={template.address || ""} onChange={(e) => setTemplate((t) => ({ ...t, address: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <label className="text-sm"><span className="mb-1 block font-medium">Tamanho nome</span><input type="number" value={template.settings?.nameSize ?? 19} onChange={(e) => setTemplate((t) => ({ ...t, settings: { ...(t.settings || {}), nameSize: Number(e.target.value || 19) } }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
+                  <label className="text-sm"><span className="mb-1 block font-medium">Tamanho cargo</span><input type="number" value={template.settings?.roleSize ?? 11.26} onChange={(e) => setTemplate((t) => ({ ...t, settings: { ...(t.settings || {}), roleSize: Number(e.target.value || 11.26) } }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
+                  <label className="text-sm"><span className="mb-1 block font-medium">Tamanho e-mail</span><input type="number" value={template.settings?.emailSize ?? 16} onChange={(e) => setTemplate((t) => ({ ...t, settings: { ...(t.settings || {}), emailSize: Number(e.target.value || 16) } }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
+                  <label className="text-sm"><span className="mb-1 block font-medium">Tamanho telefone</span><input type="number" value={template.settings?.phoneSize ?? 16} onChange={(e) => setTemplate((t) => ({ ...t, settings: { ...(t.settings || {}), phoneSize: Number(e.target.value || 16) } }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
+                  <label className="text-sm"><span className="mb-1 block font-medium">Tamanho endereço</span><input type="number" value={template.settings?.addressSize ?? 9} onChange={(e) => setTemplate((t) => ({ ...t, settings: { ...(t.settings || {}), addressSize: Number(e.target.value || 9) } }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
+                  <label className="text-sm"><span className="mb-1 block font-medium">Tamanho frase central</span><input type="number" value={template.settings?.siteLabelSize ?? 10.09} onChange={(e) => setTemplate((t) => ({ ...t, settings: { ...(t.settings || {}), siteLabelSize: Number(e.target.value || 10.09) } }))} className="w-full rounded-xl border border-slate-200 px-3 py-3" /></label>
+                </div>
               </div>
             </div>
 
@@ -321,18 +351,24 @@ export default function Home() {
                     onClick={async () => {
                       if (!csvUrl.trim()) return setBulkStatus("Informe uma URL CSV.");
                       try {
-                        setBulkStatus("Buscando CSV da URL...");
-                        const res = await fetch(csvUrl, { cache: "no-store" });
-                        const text = await res.text();
-                        if (!res.ok) {
-                          setBulkStatus(`Falha ao buscar URL: HTTP ${res.status}`);
+                        setBulkStatus("Buscando CSV da URL e salvando no Supabase...");
+                        const res = await fetch("/api/import-signature-csv", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            csvUrl,
+                            template_id: template.id ?? null,
+                          }),
+                        });
+                        const json = await res.json().catch(() => null);
+                        if (!res.ok || !json?.ok) {
+                          setBulkStatus(`Falha ao importar: ${json?.error || res.statusText || "erro desconhecido"}`);
                           return;
                         }
-                        if (!text.includes(",") || !text.toLowerCase().includes("firstname")) {
-                          setBulkStatus("A URL respondeu, mas o conteúdo não parece ser um CSV válido com os cabeçalhos esperados.");
-                          return;
-                        }
-                        await importCsvText(text);
+                        await loadProfiles();
+                        if (Array.isArray(json.data) && json.data[0]) setProfile(json.data[0]);
+                        setLastImportedEmails(Array.isArray(json.data) ? json.data.map((row: Profile) => row.email) : []);
+                        setBulkStatus(`${json?.count ?? 0} perfil(is) importado(s) e salvo(s) com sucesso.`);
                       } catch (error) {
                         setBulkStatus(`Erro ao importar via URL: ${error instanceof Error ? error.message : "desconhecido"}`);
                       }
@@ -358,7 +394,14 @@ export default function Home() {
           </div>
 
           <div className="sticky top-5 self-start rounded-[18px] border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold">Prévia individual</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-xl font-semibold">Prévia individual</h2>
+              <div className="flex items-center gap-2">
+                <button onClick={() => goToProfile("prev")} className="rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-semibold">←</button>
+                <span className="rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600">{profiles.length ? `${Math.max(currentProfileIndex + 1, 1)} de ${profiles.length}` : "0 de 0"}</span>
+                <button onClick={() => goToProfile("next")} className="rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-semibold">→</button>
+              </div>
+            </div>
             <div className="mt-4 flex min-h-[60vh] justify-center overflow-auto rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6">
               <div dangerouslySetInnerHTML={{ __html: html }} />
             </div>
@@ -371,9 +414,7 @@ export default function Home() {
                   <button onClick={loadProfiles} className="rounded-full border border-slate-300 bg-white px-3 py-2 text-xs font-semibold">Recarregar</button>
                 </div>
               </div>
-              {lastImportedEmails.length > 0 ? (
-                <p className="mt-3 text-sm text-emerald-700">Última importação: {lastImportedEmails.length} perfil(is) incluído(s)/atualizado(s).</p>
-              ) : null}
+              {lastImportedEmails.length > 0 ? <p className="mt-3 text-sm text-emerald-700">Última importação: {lastImportedEmails.length} perfil(is) incluído(s)/atualizado(s).</p> : null}
               <div className="mt-4 grid gap-3">
                 {profiles.length === 0 ? <p className="text-sm text-slate-500">Nenhum perfil salvo ainda.</p> : profiles.map((item) => {
                   const isImported = lastImportedEmails.includes(item.email);
